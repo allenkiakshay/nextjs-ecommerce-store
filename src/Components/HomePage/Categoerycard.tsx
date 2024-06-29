@@ -8,7 +8,7 @@ interface CardProps {
 
 const Card: FC<CardProps> = ({ name, image }) => {
   return (
-    <div className="relative w-[280px] h-[450px] sm:w-[200px] sm:h-[350px] md:w-[240px] md:h-[400px] lg:w-[280px] lg:h-[450px]">
+    <div className="relative w-[280px] h-[350px] sm:w-[200px] sm:h-[200px] md:w-[240px] md:h-[300px] lg:w-[280px] lg:h-[350px]">
       <div className="flex w-full h-full justify-center items-end">
         <Image src={image} alt={name} layout="fill" className="rounded-[4px]"/>
         <div className="z-30 w-full h-[40px] bg-white mx-5 mb-5 rounded-[6px] flex justify-center items-center hover:bg-black hover:text-white">

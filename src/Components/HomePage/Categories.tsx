@@ -58,8 +58,8 @@ export default function Categories() {
         </div>
       </div>
       {/* Mobile View */}
-      <div className="sm:hidden text-center justify-center items-center w-[screen] h-fill p-10">
-        <div className="text-3xl font-bold h-[50px]">Shop by Categories</div>
+      <div className="sm:hidden text-center justify-center items-center w-[screen] h-fill p-6 sm:p-10">
+        <div className="text-2xl font-bold h-[50px]">Shop by Categories</div>
         <div className="flex justify-center items-center h-full p-10">
           <Card name="Casual Wear" image="/Password.png" />
         </div>
