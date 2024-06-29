@@ -8,7 +8,7 @@ const Fotter = () => {
           <div className="w-full grid grid-flow-row gap-6">
             <div className="relative w-[100px] h-[40px]">
               <Image
-                src={"/logo1.png"}
+                src={"/logo.png"}
                 alt="logo"
                 layout="fill"
                 objectFit="contain"
