@@ -15,6 +15,7 @@ interface NavbarCategory {
 
 export default function Navbar() {
   const [showDropdown, setShowDropdown] = useState(false);
+  const [categories, setCategories] = useState(false);
 
   const toggleDropdown = () => {
     setShowDropdown((prev) => !prev);
@@ -22,7 +23,7 @@ export default function Navbar() {
 
   return (
     <>
-      <div className="w-screen h-[100px] text-black flex items-center justify-between p-2 pl-20 pr-20">
+      <div className="hidden w-[screen] h-[100px] text-black md:flex items-center justify-between p-2 pl-10 pr-10">
         <div className="flex items-center">
           <Image src="/logo.png" alt="Logo" width={130} height={40} />
         </div>
@@ -105,9 +106,80 @@ export default function Navbar() {
         </div>
       </div>
 
+      <div className="md:hidden w-screen h-[100px] text-black flex items-center justify-between p-2 pl-10 pr-10">
+        <div className="flex items-center">
+          <Image src="/logo.png" alt="Logo" width={80} height={40} />
+        </div>
+        <div className="flex items-center gap-10">
+          <button onClick={toggleDropdown}>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              fill="currentColor"
+              className="bi bi-list"
+              viewBox="0 0 16 16"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"
+              />
+            </svg>
+          </button>
+          <a href="#">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              fill="currentColor"
+              className="bi bi-cart hover:text-gray-300"
+              viewBox="0 0 16 16"
+            >
+              <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5M3.102 4l1.313 7h8.17l1.313-7zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4m7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4m-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2m7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2" />
+            </svg>
+          </a>
+        </div>
+      </div>
+
       {showDropdown && (
-        <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-40 z-50 flex justify-center items-start pt-[96px] overflow-auto">
-          <div className="w-[800px] max-h-[300px] bg-white grid grid-cols-4 grid-flow-row gap-10 justify-start items-start p-4 sm:p-8 relative">
+        <>
+          <div className="hidden fixed top-0 left-0 w-full h-full bg-black bg-opacity-40 z-50 md:flex justify-center items-start pt-[96px] overflow-auto">
+            <div className="w-[800px] max-h-[300px] bg-white grid grid-cols-4 grid-flow-row gap-10 justify-start items-start p-4 sm:p-8 relative">
+              <button
+                className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 cursor-pointer"
+                onClick={() => setShowDropdown(false)}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  fill="currentColor"
+                  className="bi bi-x"
+                  viewBox="0 0 16 16"
+                >
+                  <path d="M4.354 4.354a.5.5 0 0 1 .708 0L8 7.293l3.938-3.939a.5.5 0 1 1 .708.708L8.707 8l3.939 3.938a.5.5 0 1 1-.708.708L8 8.707l-3.938 3.938a.5.5 0 1 1-.708-.708L7.293 8 3.354 4.062a.5.5 0 0 1 0-.708z" />
+                </svg>
+              </button>
+              {Navbarvalues.map((category, index) => (
+                <div key={index} className="mb-4 w-fit">
+                  <h2 className="text-lg font-semibold mb-2">
+                    {category.heading}
+                  </h2>
+                  <ul>
+                    {category.values.map((item, idx) => (
+                      <li key={idx} className="mb-2">
+                        <a href={"#"} className="text-gray-500 hover:underline">
+                          {item.name}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="md:hidden fixed flex top-0 left-0 w-screen h-[300px] bg-black z-50 bg-opacity-40 justify-start items-start overflow-auto mt-[96px] p-[10px]">
             <button
               className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 cursor-pointer"
               onClick={() => setShowDropdown(false)}
@@ -123,24 +195,67 @@ export default function Navbar() {
                 <path d="M4.354 4.354a.5.5 0 0 1 .708 0L8 7.293l3.938-3.939a.5.5 0 1 1 .708.708L8.707 8l3.939 3.938a.5.5 0 1 1-.708.708L8 8.707l-3.938 3.938a.5.5 0 1 1-.708-.708L7.293 8 3.354 4.062a.5.5 0 0 1 0-.708z" />
               </svg>
             </button>
-            {Navbarvalues.map((category, index) => (
-              <div key={index} className="mb-4 w-fit">
-                <h2 className="text-lg font-semibold mb-2">
-                  {category.heading}
-                </h2>
-                <ul>
-                  {category.values.map((item, idx) => (
-                    <li key={idx} className="mb-2">
-                      <a href={"#"} className="text-gray-500 hover:underline">
-                        {item.name}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
+            <div className="flex flex-col">
+              <a
+                href="#"
+                onClick={() => setCategories(false)}
+                className="text-white p-4 hover:bg-gray-800"
+              >
+                Home
+              </a>
+              <div
+                onClick={() => setCategories((prev) => !prev)}
+                className="text-white p-4 hover:bg-gray-800"
+              >
+                Shop
               </div>
-            ))}
+              {categories && (
+                <div className="flex flex-col pl-[60px]">
+                  {Navbarvalues.map((category, index) => (
+                    <div key={index} className="mb-4 w-fit">
+                      <h2 className="text-lg font-semibold mb-2">
+                        {category.heading}
+                      </h2>
+                      <ul>
+                        {category.values.map((item, idx) => (
+                          <li key={idx} className="mb-2">
+                            <a
+                              href={"#"}
+                              className="text-gray-500 hover:underline"
+                            >
+                              {item.name}
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+                </div>
+              )}
+              <a
+                href="#"
+                onClick={() => setCategories(false)}
+                className="text-white p-4 hover:bg-gray-800"
+              >
+                Our Story
+              </a>
+              <a
+                href="#"
+                onClick={() => setCategories(false)}
+                className="text-white p-4 hover:bg-gray-800"
+              >
+                Blog
+              </a>
+              <a
+                href="#"
+                onClick={() => setCategories(false)}
+                className="text-white p-4 hover:bg-gray-800"
+              >
+                Contact Us
+              </a>
+            </div>
           </div>
-        </div>
+        </>
       )}
     </>
   );
