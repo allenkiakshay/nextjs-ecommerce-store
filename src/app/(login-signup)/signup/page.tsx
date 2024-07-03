@@ -1,6 +1,7 @@
 import Image from "next/image";
 
 export default function LoginPage() {
+
   return (
     <>
       <div className="min-h-screen flex flex-col md:flex-row bg-white">
@@ -31,6 +32,13 @@ export default function LoginPage() {
             <input
               type="text"
               placeholder="Last Name"
+              className="border-2 rounded-[6px] p-2 border-black my-2 text-black"
+              required
+            />
+            <p className="text-sm text-black">Mobile Number</p>
+            <input
+              type="tel"
+              placeholder="Mobile Number"
               className="border-2 rounded-[6px] p-2 border-black my-2 text-black"
               required
             />
@@ -72,7 +80,7 @@ export default function LoginPage() {
               {/* Replace this with your reCAPTCHA implementation */}
               <div id="recaptcha-container"></div>
             </div>
-            <button className="bg-black text-white py-2 my-4">Login</button>
+            <button className="bg-black text-white py-2 my-4">Sign Up</button>
           </form>
         </div>
       </div>

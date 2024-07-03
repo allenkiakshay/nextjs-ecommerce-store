@@ -24,9 +24,11 @@ export default function Navbar() {
   return (
     <>
       <div className="hidden w-[screen] h-[100px] text-black md:flex items-center justify-between p-2 pl-10 pr-10">
-        <div className="flex items-center">
-          <Image src="/logo.png" alt="Logo" width={130} height={40} />
-        </div>
+        <a href="/">
+          <div className="flex items-center">
+            <Image src="/logo.png" alt="Logo" width={130} height={40} />
+          </div>
+        </a>
 
         <div className="flex space-x-6">
           <a href="#">
@@ -107,9 +109,11 @@ export default function Navbar() {
       </div>
 
       <div className="md:hidden w-screen h-[100px] text-black flex items-center justify-between p-2 pl-10 pr-10">
-        <div className="flex items-center">
-          <Image src="/logo.png" alt="Logo" width={80} height={40} />
-        </div>
+        <a href="/">
+          <div className="flex items-center">
+            <Image src="/logo.png" alt="Logo" width={80} height={40} />
+          </div>
+        </a>
         <div className="flex items-center gap-10">
           <button onClick={toggleDropdown}>
             <svg
