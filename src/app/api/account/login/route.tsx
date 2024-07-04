@@ -1,9 +1,9 @@
 "use server";
-import { PrismaClient } from "@prisma/client";
+import { getClient } from "@/lib/Connection";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
-  const prisma = new PrismaClient();
+  const client = await getClient();
 
   try {
     let email: string | any = req.headers.get("user");
@@ -14,16 +14,16 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const user = await prisma.client.findUnique({
-      where: {
-        email: atob(email),
-      },
-    });
+    const sqlQuery = `
+    SELECT * FROM "Client";
+    `;
 
-    return NextResponse.json({ user });
+    const result = await client.query(sqlQuery);
+
+    await client.end();
+
+    return NextResponse.json({ clients: result.rows });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
-  } finally {
-    await prisma.$disconnect();
   }
 }
