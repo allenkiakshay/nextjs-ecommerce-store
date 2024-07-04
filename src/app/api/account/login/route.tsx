@@ -1,11 +1,29 @@
+"use server";
+import { PrismaClient } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(req: NextRequest) {
-  const query: any = req;
-  return NextResponse.json({ message: "Hello World" });
-}
-
 export async function POST(req: NextRequest) {
-  const body = await req.json();
-  return NextResponse.json({ message: "User logged in successfully" });
+  const prisma = new PrismaClient();
+
+  try {
+    let email: string | any = req.headers.get("user");
+    if (!email) {
+      return NextResponse.json(
+        { error: "User header is missing" },
+        { status: 400 }
+      );
+    }
+
+    const user = await prisma.client.findUnique({
+      where: {
+        email: atob(email),
+      },
+    });
+
+    return NextResponse.json({ user });
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  } finally {
+    await prisma.$disconnect();
+  }
 }
