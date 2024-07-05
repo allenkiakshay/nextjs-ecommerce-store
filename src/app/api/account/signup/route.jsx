@@ -4,13 +4,33 @@ import { getClient } from "@/lib/Connection";
 import { NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
+import { createClient } from "@/lib/Schema";
+import { sendEmail } from "@/lib/SendVerifyEmail";
 
 async function hashPassword(password) {
   return await bcrypt.hash(password, 10);
 }
 
+function generateVerificationEmailText(username, verificationLink) {
+  const body = `
+    Dear ${username},
+
+    Thank you for registering with our service. To complete your registration, please verify your email address by clicking the link below:
+
+    ${verificationLink}
+
+    If you did not create an account with us, please ignore this email.
+
+    Thank you,
+    [Your Company Name]
+  `;
+
+  return { body };
+}
+
 export async function POST(request) {
   const client = await getClient();
+  let isexist;
 
   try {
     const body = await request.json();
@@ -30,23 +50,38 @@ export async function POST(request) {
       );
     }
 
+    isexist = await client.query(
+      `SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'Client';`
+    );
+
+    if (isexist.rows.length === 0) {
+      createClient(client);
+    }
+
     const pass = await hashPassword(password);
     const token = jwt.sign({ email: atob(email) }, process.env.JWT_SECRET, {
       expiresIn: "24h",
     });
 
-    const result = await client.query(`
+    await client.query(`
     INSERT INTO "Client" (email, password, "createdAt", "firstName", "isVerified", "lastName", "mobileNo", "termsAndConditions", "updatedAt", last_login, token) VALUES ('${atob(
       email
     )}','${pass}',DEFAULT,'${f_name}',false,'${last_name}','${mobile_no}','${accepted}',DEFAULT,DEFAULT,'${token}');`);
 
-    
-    return NextResponse.json({ message: "Success", token: token });
-  } catch (e) {
-    return NextResponse.json(
-      { error: "Request body is missing" },
-      { status: 400 }
+    const verificationLink = `${process.env.WEBSITE_URL}api/account/signup/verify?token=${token}`;
+
+    sendEmail(
+      atob(email),
+      "Verify your email address",
+      generateVerificationEmailText(f_name, verificationLink).body
     );
+
+    return NextResponse.json({
+      status_message: "Success",
+      message: "Please check your email to verify your account",
+    });
+  } catch (e) {
+    return NextResponse.json({ error: e.message }, { status: 400 });
   } finally {
     client.end();
   }

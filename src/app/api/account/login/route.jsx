@@ -3,6 +3,7 @@ import { getClient } from "@/lib/Connection";
 import { NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
+import { createLoginActivity } from "@/lib/Schema";
 
 async function verifyPassword(password, hashedPassword) {
   return await bcrypt.compare(password, hashedPassword);
@@ -47,13 +48,30 @@ export async function POST(request) {
       );
     }
 
+    if (result1.rows[0].isVerified === false) {
+      return NextResponse.json(
+        { error: "User is not active" },
+        { status: 400 }
+      );
+    }
+
     const token = jwt.sign({ email: atob(email) }, process.env.JWT_SECRET, {
       expiresIn: "24h",
     });
 
     await client.query(
-      `UPDATE "Client" SET token = '${token}', last_login = CURRENT_TIMESTAMP WHERE email = '${atob(email)}';`
+      `UPDATE "Client" SET token = '${token}', last_login = CURRENT_TIMESTAMP WHERE email = '${atob(
+        email
+      )}';`
     );
+
+    const isexist = await client.query(
+      `SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'login_activity';`
+    );
+
+    if (isexist.rows.length === 0) {
+      createLoginActivity(client);
+    }
 
     await client.query(
       `INSERT INTO "login_activity" (email, jwt_token) VALUES ('${atob(
@@ -69,10 +87,8 @@ export async function POST(request) {
   }
 }
 
-
-
 // data format is as follows:
 // {
-  // "email": "YUBhLmNvbQ==",
-  // "password": "1234567"
+// "email": "YUBhLmNvbQ==",
+// "password": "1234567"
 // }

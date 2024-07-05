@@ -1,10 +1,18 @@
 "use client";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    if (token) {
+      window.location.href = "/";
+    }
+  }, []);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -26,7 +34,7 @@ export default function LoginPage() {
         localStorage.setItem("token", data.token);
         window.location.href = "/";
       } else {
-        alert(data.message);
+        alert(data.message || data.error || "Login failed. Please try again.");
       }
     } catch (error) {
       console.error("Login error:", error);
@@ -67,9 +75,17 @@ export default function LoginPage() {
               required
               onChange={(e) => setPassword(e.target.value)}
             />
-            <a href="/passwordreset" className="text-sm text-black text-right">
-              Forgot Password?
-            </a>
+            <div className="flex justify-between items-center">
+              <a href="/signup" className="text-sm text-black">
+                Sign Up
+              </a>
+              <a
+                href="/passwordreset"
+                className="text-sm text-black text-right"
+              >
+                Forgot Password?
+              </a>
+            </div>
             {/* Placeholder for Google reCAPTCHA */}
             <div className="my-4">
               {/* Replace this with your reCAPTCHA implementation */}
