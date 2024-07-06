@@ -22,14 +22,16 @@ function generateVerificationEmailText(username, verificationLink) {
     If you did not create an account with us, please ignore this email.
 
     Thank you,
-    [Your Company Name]
+    Mahesh Mens Touch
   `;
 
   return { body };
 }
 
 export async function POST(request) {
-  const client = await getClient();
+  const client = await getClient(
+    `${process.env.DATABASE_URL_1}${process.env.DATABASE_ACCOUNT_USER}${process.env.DATABASE_URL_2}`
+  );
   let isexist;
 
   try {

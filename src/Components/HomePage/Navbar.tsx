@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Navbarvalues } from "@/constants/Homepage";
 
 interface NavbarItem {
@@ -16,9 +16,37 @@ interface NavbarCategory {
 export default function Navbar() {
   const [showDropdown, setShowDropdown] = useState(false);
   const [categories, setCategories] = useState(false);
+  const [signin, setSignin] = useState(false);
 
   const toggleDropdown = () => {
     setShowDropdown((prev) => !prev);
+  };
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    if (token) {
+      const decodedToken = JSON.parse(atob(token.split(".")[1]));
+      const isTokenExpired = Date.now() >= decodedToken.exp * 1000;
+
+      if (isTokenExpired) {
+        localStorage.removeItem("token");
+        // window.location.href = "/login";
+        setSignin(true);
+      } else {
+        setSignin(false);
+      }
+    } else {
+      // window.location.href = "/login";
+      setSignin(true);
+    }
+  }, []);
+
+  const handleSignOut = () => {
+    localStorage.removeItem("token");
+    // window.location.href = "/login";
+    setSignin(true);
+    window.alert("You have been signed out");
   };
 
   return (
@@ -102,9 +130,21 @@ export default function Navbar() {
               <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5M3.102 4l1.313 7h8.17l1.313-7zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4m7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4m-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2m7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2" />
             </svg>
           </a>
-          <button className="bg-black text-white px-4 py-2 rounded-md hover:bg-gray-800">
-            Sign In
-          </button>
+          {signin == true ? (
+            <a
+              href="/login"
+              className="bg-black text-white px-4 py-2 rounded-md hover:bg-gray-800"
+            >
+              Sign In
+            </a>
+          ) : (
+            <button
+              onClick={() => handleSignOut()}
+              className="bg-black text-white px-4 py-2 rounded-md hover:bg-gray-800"
+            >
+              Sign Out
+            </button>
+          )}
         </div>
       </div>
 

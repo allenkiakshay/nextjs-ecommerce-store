@@ -4,9 +4,52 @@ import { useState } from "react";
 
 export default function LoginPage() {
   const [state, setState] = useState(false);
+  const [otp, setOtp] = useState(null);
+  const [pass1, setPass1] = useState("");
+  const [pass2, setPass2] = useState("");
+  const [message, setMessage] = useState("");
+
+  const handlePasswordReset = async (e) => {
+    e.preventDefault();
+    const token = localStorage.getItem("password_reset_token");
+    try {
+      if (pass1 !== pass2) {
+        setMessage("Passwords do not match");
+        return;
+      }
+      const response = await fetch("/api/account/passwordreset/verify", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          password_reset_token: token,
+          userotp: otp,
+          password: pass1,
+        }),
+      });
+      if (response.status === 200) {
+        const data = await response.json();
+        setMessage(data.body.error);
+        localStorage.removeItem("password_reset_token");
+        localStorage.removeItem("token");
+        if (data.body.status === "success") setState(true);
+      } else {
+        const errorData = await response.json();
+        console.error(errorData);
+        window.alert(errorData.body.error);
+        setMessage(errorData.body.error);
+      }
+    } catch (error) {
+      console.error(error.data.error);
+      window.alert(error.data.error);
+      setMessage(error.data.error);
+    }
+  };
+
   return (
     <>
-      {state ? (
+      {state === true ? (
         <>
           <div className="min-h-screen flex flex-col md:flex-row bg-white">
             <div className="hidden md:block md:w-1/2 h-screen relative">
@@ -58,6 +101,7 @@ export default function LoginPage() {
                 <p className="text-xs sm:text-sm opacity-50">
                   Your Password has been Updated Successfully
                 </p>
+                
               </div>
               <div className="w-full flex justify-center items-center pt-4">
                 <a
@@ -80,9 +124,30 @@ export default function LoginPage() {
             <h6 className="text-sm text-gray-500 text-center pt-2">
               Enter OTP Received on Your Registered Email Address
             </h6>
-            <form className="flex flex-col w-full md:w-1/2 mt-9">
+            <form
+              className="flex flex-col w-full md:w-1/2 mt-9"
+              onSubmit={handlePasswordReset}
+            >
+              <input
+                type="password"
+                value={pass1}
+                onChange={(e) => setPass1(e.target.value)}
+                placeholder="New Password"
+                className="border-2 rounded-[6px] p-2 border-black my-2 text-black"
+                required
+              />
+              <input
+                type="password"
+                value={pass2}
+                onChange={(e) => setPass2(e.target.value)}
+                placeholder="Confirm Password"
+                className="border-2 rounded-[6px] p-2 border-black my-2 text-black"
+                required
+              />
               <input
                 type="number"
+                value={otp}
+                onChange={(e) => setOtp(parseInt(e.target.value))}
                 placeholder="One Time Password"
                 className="border-2 rounded-[6px] p-2 border-black my-2 text-black"
                 required
@@ -100,10 +165,14 @@ export default function LoginPage() {
               </div>
               <button
                 className="bg-black text-white py-2 my-4"
-                onClick={() => setState(true)}
+                // onClick={() => setState(true)}
+                type="submit"
               >
                 Verify
               </button>
+              {message && (
+                  <div className="text-red-500 text-sm">{message}</div>
+                )}
             </form>
           </div>
         </div>

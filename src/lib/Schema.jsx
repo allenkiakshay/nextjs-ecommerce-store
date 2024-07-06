@@ -21,6 +21,7 @@ export async function createClient(client) {
     create unique index "Client_email_key"
         on "Client" (email);
     
+    grant insert, references, select, update on "Client" to mmt;
     `
   );
 }
@@ -35,7 +36,30 @@ export async function createLoginActivity(client) {
     );
     
     alter table login_activity
-        owner to postgres;    
+        owner to postgres;
+    
+    grant insert, references, select, update on login_activity to mmt;      
+    `
+  );
+}
+
+export async function createPasswordReset(client) {
+  await client.query(
+    `create table password_reset
+    (
+        email                text,
+        otp                  integer,
+        password_reset_token text
+            constraint password_reset_pk
+                unique,
+        created_at           timestamp default CURRENT_TIMESTAMP,
+        updated_at           timestamp default CURRENT_TIMESTAMP
+    );
+    
+    alter table password_reset
+        owner to postgres;
+    
+    grant insert, references, select, update on password_reset to mmt;    
     `
   );
 }

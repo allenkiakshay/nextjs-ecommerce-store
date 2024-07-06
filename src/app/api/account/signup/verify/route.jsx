@@ -5,7 +5,9 @@ import { NextResponse } from "next/server";
 import { parse } from "url";
 
 export async function GET(req) {
-  const client = await getClient();
+  const client = await getClient(
+    `${process.env.DATABASE_URL_1}${process.env.DATABASE_ACCOUNT_USER}${process.env.DATABASE_URL_2}`
+  );
   try {
     const parsedUrl = parse(req.url, true);
     const token = parsedUrl.query.token;
@@ -47,9 +49,7 @@ export async function GET(req) {
       );
     }
 
-    return NextResponse.redirect(
-      `${process.env.WEBSITE_URL}/signup/verified`
-    );
+    return NextResponse.redirect(`${process.env.WEBSITE_URL}/signup/verified`);
   } catch (e) {
     return NextResponse.json({ error: e.message }, { status: 500 });
   } finally {

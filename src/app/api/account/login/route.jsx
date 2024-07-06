@@ -10,7 +10,9 @@ async function verifyPassword(password, hashedPassword) {
 }
 
 export async function POST(request) {
-  const client = await getClient();
+  const client = await getClient(
+    `${process.env.DATABASE_URL_1}${process.env.DATABASE_ACCOUNT_USER}${process.env.DATABASE_URL_2}`
+  );
   try {
     const body = await request.json();
     const { email, password } = body;

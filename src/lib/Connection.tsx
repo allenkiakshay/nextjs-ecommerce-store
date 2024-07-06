@@ -1,12 +1,8 @@
 import { Client } from "pg";
 
-export async function getClient() {
-  const port = process.env.DB_PORT
-    ? parseInt(process.env.DB_PORT, 10)
-    : undefined;
-
+export async function getClient(url: string) {
   const connection = new Client({
-    connectionString: process.env.DATABASE_URL,
+    connectionString: url,
     ssl: {
       rejectUnauthorized: false,
     },
